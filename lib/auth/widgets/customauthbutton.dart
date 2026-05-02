@@ -9,7 +9,8 @@ class CustomAuthButton extends StatelessWidget {
     super.key,
     this.onPressed,
     required this.text,
-    required this.color, required this.textColor,
+    required this.color,
+    required this.textColor,
   });
 
   @override
