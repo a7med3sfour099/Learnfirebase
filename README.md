@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # firebaselearn
 
 learn firebase
@@ -15,3 +16,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# Learnfirebase
+To-do-list Project
+>>>>>>> 12c0a5fda95027647b18cf40a671e6285ab71ecc
