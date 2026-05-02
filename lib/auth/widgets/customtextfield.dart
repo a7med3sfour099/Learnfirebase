@@ -8,6 +8,8 @@ class Customtextfield extends StatelessWidget {
   final Widget preIcon;
   final String text;
   final String hintText;
+final String? Function(String?)? validator;
+  final void Function(String)? onChanged;
 
   const Customtextfield({
     super.key,
@@ -15,21 +17,16 @@ class Customtextfield extends StatelessWidget {
     required this.obscure,
     required this.preIcon,
     required this.text,
-    required this.hintText,
+    required this.hintText, this.validator, this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: controller,
       obscureText: obscure,
-      // onChanged: (value) {
-      //   print();
-      // },
-
-      // onSubmitted: (value) {
-      //   print();
-      // },
+      onChanged: onChanged,
+      validator: validator,
       style: TextStyle(fontSize: 16, color: AppColors.secondaryBlack),
       textAlign: TextAlign.start,
 
