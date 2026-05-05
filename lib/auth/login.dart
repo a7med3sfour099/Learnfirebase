@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebaselearn/auth/signup.dart';
 import 'package:firebaselearn/auth/widgets/customauthbutton.dart';
@@ -60,6 +61,17 @@ class _LoginState extends State<Login> {
                     ),
                     Gap(30),
                     Customtextfield(
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        if (!RegExp(
+                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                        ).hasMatch(value)) {
+                          return 'Please enter a valid email address';
+                        }
+                        return null;
+                      },
                       controller: emailController,
                       obscure: false,
                       preIcon: Icon(Icons.email),
@@ -68,6 +80,12 @@ class _LoginState extends State<Login> {
                     ),
                     Gap(25),
                     Customtextfield(
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        return null;
+                      },
                       controller: passwordController,
                       obscure: true,
                       preIcon: Icon(Icons.lock),
@@ -78,12 +96,25 @@ class _LoginState extends State<Login> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.secondaryBlue,
-                            fontWeight: FontWeight.w500,
+                        GestureDetector(
+                          onTap: () {
+                            // Handle forgot password logic here
+                            AwesomeDialog(
+                              context: context,
+                              dialogType: DialogType.infoReverse,
+                              animType: AnimType.rightSlide,
+                              title: 'Feature Unavailable',
+                              desc:
+                                  'Forgot Password functionality is not implemented yet.',
+                            ).show();
+                          },
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.secondaryBlue,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ],
@@ -96,7 +127,7 @@ class _LoginState extends State<Login> {
                             final _ = await FirebaseAuth.instance
                                 .signInWithEmailAndPassword(
                                   email: emailController.text.trim(),
-                                  password: passwordController.text,
+                                  password: passwordController.text.trim(),
                                 );
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -112,6 +143,7 @@ class _LoginState extends State<Login> {
                               ),
                             );
                             await Future.delayed(const Duration(seconds: 2));
+
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -119,11 +151,59 @@ class _LoginState extends State<Login> {
                               ),
                             );
                           } on FirebaseAuthException catch (e) {
-                            if (e.code == 'user-not-found') {
-                              print('No user found for that email.');
-                            } else if (e.code == 'wrong-password') {
-                              print('Wrong password provided for that user.');
+                            // print('Error code: ${e.code}');
+                            // print('Error message: ${e.message}');
+                            if (mounted) {
+                              String errorMessage = '';
+
+                              switch (e.code) {
+                                case 'invalid-credential':
+                                case 'user-not-found':
+                                case 'wrong-password':
+                                  errorMessage =
+                                      'Invalid email or password. Please try again.';
+                                  break;
+                                case 'too-many-requests':
+                                  errorMessage =
+                                      'Too many failed attempts. Please try again later.';
+                                  break;
+                                case 'user-disabled':
+                                  errorMessage =
+                                      'This account has been disabled.';
+                                  break;
+                                default:
+                                  errorMessage =
+                                      e.message ??
+                                      'Login failed. Please try again.';
+                              }
+
+                              AwesomeDialog(
+                                context: context,
+                                dialogType: DialogType.error,
+                                animType: AnimType.rightSlide,
+                                title: 'Login Failed',
+                                desc: errorMessage,
+                              ).show();
                             }
+                            //   if (e.code == 'user-not-found') {
+                            //     print('No user found for that email.');
+                            //     AwesomeDialog(
+                            //       context: context,
+                            //       dialogType: DialogType.error,
+                            //       animType: AnimType.rightSlide,
+                            //       title: 'Login Failed',
+                            //       desc: 'No user found for that email.',
+                            //     )..show();
+                            //   } else if (e.code == 'wrong-password') {
+                            //     print('Wrong password provided for that user.');
+                            //     AwesomeDialog(
+                            //       context: context,
+                            //       dialogType: DialogType.error,
+                            //       animType: AnimType.rightSlide,
+                            //       title: 'Login Failed',
+                            //       desc: 'Wrong password provided for that user.',
+                            //     )..show();
+                            //   }
                           }
                         }
                       },
